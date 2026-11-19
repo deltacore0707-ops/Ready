@@ -5520,7 +5520,7 @@ local function applyState()
     if __HH.mainFrame and __HH.uiScaleObject then __HH.uiScaleObject.Scale = uiScaleValue end
     if __HH.mainFrame then
         local sizeStep = ((__HH.guiSizeValue or 3) - 3) * 50
-        __HH.mainFrame.Size = UDim2.new(0, 216 + sizeStep, 0, 500 + sizeStep)
+        __HH.mainFrame.Size = UDim2.new(0, 181 + sizeStep, 0, 500)
     end
     if autoLeftEnabled then startAutoLeft() end
     if autoLeftSetVisual then autoLeftSetVisual(autoLeftEnabled) end
@@ -9526,7 +9526,7 @@ local function buildGui()
     __HH.mainFrame = Instance.new("Frame", gui)
     __HH.mainFrame.Name = "MainFrame"
     local sizeStep = ((__HH.guiSizeValue or 3) - 3) * 50
-    __HH.mainFrame.Size = UDim2.new(0, 216 + sizeStep, 0, 500 + sizeStep)
+    __HH.mainFrame.Size = UDim2.new(0, 181 + sizeStep, 0, 500)
     __HH.mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     __HH.mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- always opens in the center of the screen
     __HH.panelScaleObject = nil -- GUI Size now adjusts width and height directly.
@@ -12001,60 +12001,6 @@ local function buildGui()
         end; saveConfig()
     end, false)
 
-    do
-        local scaleRow = mkRow(sfExtra)
-        local scaleHolder = Instance.new("Frame", scaleRow)
-        scaleHolder.Size = UDim2.new(0, 152, 0, 28)
-        scaleHolder.Position = UDim2.new(0, 0, 0.5, -14)
-        scaleHolder.BackgroundColor3 = INP_BG
-        scaleHolder.BackgroundTransparency = 0.18
-        scaleHolder.BorderSizePixel = 0
-        scaleHolder.ZIndex = 5
-        Instance.new("UICorner", scaleHolder).CornerRadius = UDim.new(0, 8)
-        local shStroke = Instance.new("UIStroke", scaleHolder)
-        shStroke.Color = Color3.fromRGB(69, 88, 134)
-        shStroke.Thickness = 1.1
-        shStroke.Transparency = 0.25
-
-        local scaleTb = Instance.new("TextBox", scaleHolder)
-        scaleTb.Size = UDim2.new(0, 64, 1, 0)
-        scaleTb.Position = UDim2.new(0, 10, 0, 0)
-        scaleTb.BackgroundTransparency = 1
-        scaleTb.Text = tostring(uiScaleValue)
-        scaleTb.TextColor3 = WHITE
-        scaleTb.Font = Enum.Font.GothamSemibold
-        scaleTb.TextSize = 14
-        scaleTb.TextXAlignment = Enum.TextXAlignment.Left
-        scaleTb.ClearTextOnFocus = false
-        scaleTb.ZIndex = 6
-
-        local scaleCaption = Instance.new("TextLabel", scaleHolder)
-        scaleCaption.Size = UDim2.new(0, 74, 1, 0)
-        scaleCaption.Position = UDim2.new(1, -82, 0, 0)
-        scaleCaption.BackgroundTransparency = 1
-        scaleCaption.Text = "UI Scale"
-        scaleCaption.TextColor3 = Color3.fromRGB(226, 205, 244)
-        scaleCaption.Font = Enum.Font.GothamMedium
-        scaleCaption.TextSize = 13
-        scaleCaption.TextXAlignment = Enum.TextXAlignment.Right
-        scaleCaption.ZIndex = 6
-
-        scaleTb.Focused:Connect(function()
-            TS:Create(shStroke, TweenInfo.new(0.12), {Color = BLUE_GLOW, Transparency = 0}):Play()
-        end)
-        scaleTb.FocusLost:Connect(function()
-            TS:Create(shStroke, TweenInfo.new(0.12), {Color = Color3.fromRGB(69, 88, 134), Transparency = 0.25}):Play()
-            local v = tonumber(scaleTb.Text)
-            if v and v >= 0.4 and v <= 1.3 then
-                uiScaleValue = v
-                if __HH.uiScaleObject then __HH.uiScaleObject.Scale = v end
-                saveConfig()
-            else
-                scaleTb.Text = tostring(uiScaleValue)
-            end
-        end)
-    end
-
     local devLbl
     do
         local row = mkRow(sfExtra)
@@ -12188,7 +12134,7 @@ local function buildGui()
     end
 
     -- GUI Size: centered number box at the bottom of the Extra tab.
-    -- Resizes the whole panel (same 0.5 - 1.5 multiplier style as UI Scale).
+    -- GUI Size changes width only; panel height remains fixed.
     do
         local sizeRow = mkRow(sfExtra)
         local sizeHolder = Instance.new("Frame", sizeRow)
@@ -12233,14 +12179,14 @@ local function buildGui()
         end)
         sizeTb.FocusLost:Connect(function()
             TS:Create(szStroke, TweenInfo.new(0.12), {Color = Color3.fromRGB(69, 88, 134), Transparency = 0.25}):Play()
-            -- GUI Size adjusts both dimensions in 50 px steps; width keeps the 132 px reduction at every setting.
+            -- GUI Size changes width in 50 px steps; height stays fixed. Width is 35 px narrower than the original.
             -- Roblox UI uses pixels, not physical centimetres.
             local v = tonumber(sizeTb.Text)
             if v and v >= 2 and v <= 5 and v == math.floor(v) then
                 __HH.guiSizeValue = v
                 local sizeStep = (v - 3) * 50
                 if __HH.mainFrame then
-                    __HH.mainFrame.Size = UDim2.new(0, 216 + sizeStep, 0, 500 + sizeStep)
+                    __HH.mainFrame.Size = UDim2.new(0, 181 + sizeStep, 0, 500)
                 end
                 saveConfig()
             else
